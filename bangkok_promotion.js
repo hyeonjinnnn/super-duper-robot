@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-  $('section').each(function(){
+  $('.section_box').each(function(){
     $('.slider-navigation').prepend('<div class="tick"></div>');
   });
 
@@ -19,8 +19,8 @@ var sliderTop,pointerPos,currentSection;
 
 var bodyHeight = $('body').height();
 var sliderHeight = $('.slider-navigation').height();
-var elementHeight = $('section').height();
-var sectionAmount = $('section').length;
+var elementHeight = $('.section_box').height();
+var sectionAmount = $('.section_box').length;
 var scale = (bodyHeight - (elementHeight)) / (sliderHeight - $('.nav-pointer').outerHeight() );
 
 
@@ -60,8 +60,8 @@ $(window).resize(function () {
   waitForFinalEvent(function(){
     bodyHeight = $('body').height();
     sliderHeight = $('.slider-navigation').height();
-    elementHeight = $('section').height();
-    sectionAmount = $('section').length;
+    elementHeight = $('.section_box').height();
+    sectionAmount = $('.section_box').length;
     scale = (bodyHeight - (elementHeight)) / (sliderHeight - $('.nav-pointer').outerHeight() );
 
     updatePos();
