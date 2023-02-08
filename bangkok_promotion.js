@@ -30,7 +30,7 @@ $(function () {
 
   function arrangeNodes() {
     $(".node").remove();
-    $.each($("section"), function (i, element) {
+    $.each($(".todolist"), function (i, element) {
       let name = $(element).data("name");
       let node = $("<li class='node'><span>" + name + "</span></li>");
       $(".timeline").append(node);
