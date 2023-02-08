@@ -1,67 +1,92 @@
-$(function () {
-  function sumSection() {
-    return $(".container_box").height();
-  }
-  function setDimensionBar() {
-    $(".bar").css({
-      "height": $(window).height() / sumSection() * 100 + "%" });
+$(document).ready(function() {
 
-  }
-  function setSection() {
-    $.each($("section"), function (i, element) {
-      $(element).css({
-        "min-height": $(window).height() });
-
-    });
-  }
-
-  function addBehaviours() {
-    let sections = $("section");
-    $.each($(".node"), function (i, element) {
-      $(element).on("click", function (e) {
-        e.preventDefault();
-        let scroll = $(sections[i]).offset().top;
-        $('html, body').animate({
-          scrollTop: scroll },
-        500);
-      });
-    });
-  }
-
-  function arrangeNodes() {
-    $(".node").remove();
-    $.each($(".todolist"), function (i, element) {
-      let name = $(element).data("name");
-      let node = $("<li class='node'><span>" + name + "</span></li>");
-      $(".timeline").append(node);
-
-      $(node).css({
-        "top": $(".timeline").height() / $(document).height() * $(element).offset().top });
-
-    });
-    addBehaviours();
-  }
-
-  $(window).on("scroll", function () {
-    let top = window.scrollY / sumSection() * 100;
-    $(".bar").css({
-      "top": top + "%" });
-
-
+  $('section').each(function(){
+    $('.slider-navigation').prepend('<div class="tick"></div>');
   });
 
-  $(window).on("resize", function () {
-    setSection();
-    arrangeNodes();
-    setDimensionBar();
+  $('.tick').on('click',function(){
+    var tickIndex = $(this).index();
+    $('body').scrollTop( $(window).height() * tickIndex );
   });
 
-  setTimeout(
-  function () {
-    setSection();
-    arrangeNodes();
-    setDimensionBar();
+  updatePos();
+
+}); // end document ready
+
+
+var isDragging = false;
+var sliderTop,pointerPos,currentSection;
+
+var bodyHeight = $('body').height();
+var sliderHeight = $('.slider-navigation').height();
+var elementHeight = $('section').height();
+var sectionAmount = $('section').length;
+var scale = (bodyHeight - (elementHeight)) / (sliderHeight - $('.nav-pointer').outerHeight() );
+
+
+var waitForFinalEvent = (function () {
+  var timers = {};
+  return function (callback, ms, uniqueId) {
+    if (!uniqueId) {
+      uniqueId = "resize";
+    }
+    if (timers[uniqueId]) {
+      clearTimeout (timers[uniqueId]);
+    }
+    timers[uniqueId] = setTimeout(callback, ms);
+  };
+})();
+
+
+function updatePos() {
+  currentSection = $(window).scrollTop() / elementHeight;
+  currentSectionNum = Math.ceil(currentSection + 0.01) ;
+  sliderTop = $(window).scrollTop() / scale;
+  $('.nav-pointer').css('top', sliderTop).text(currentSectionNum + '/' + sectionAmount);
+}
+
+function sliderMove(e) {
+  $('body').scrollTop(parseInt(e) * scale);
+}
+
+$(window).scroll(function(){
+  if (!isDragging) {
+    updatePos();
+  }
+});
+
+
+$(window).resize(function () {
+  waitForFinalEvent(function(){
+    bodyHeight = $('body').height();
+    sliderHeight = $('.slider-navigation').height();
+    elementHeight = $('section').height();
+    sectionAmount = $('section').length;
+    scale = (bodyHeight - (elementHeight)) / (sliderHeight - $('.nav-pointer').outerHeight() );
+
+    updatePos();
+  }, 500, "resizing");
+});
+
+
+$(window).resize(function(){
+  
+});
+
+$( ".draggable" ).draggable({
+  axis: "y",
+  containment: "parent",
+  start: function() {
+    isDragging = true;
+    $('body').addClass('dragging');
   },
-  200);
-
+  drag: function() {
+    pointerPos = $(this).css('top');
+    sliderMove(pointerPos);
+    updatePos();
+  },
+  stop: function() {
+    isDragging = false;
+    $('body').removeClass('dragging');
+  }
 });
