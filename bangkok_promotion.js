@@ -1,6 +1,6 @@
 $(function () {
   function sumSection() {
-    return $(".container").height();
+    return $(".container_box").height();
   }
   function setDimensionBar() {
     $(".bar").css({
